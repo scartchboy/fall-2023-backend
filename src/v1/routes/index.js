@@ -1,3 +1,10 @@
+const routers = require('express').Router()
 
-const routers=require('./authentication.route');
+const authenticationRoutes = require('./authentication.route')
+const userRoutes = require('./user.route')
+const adminRoutes = require('./admin.route')
+
+routers.use('/user', authenticationRoutes)
+routers.use('/auth/user', userRoutes)
+routers.use('/admin', adminRoutes)
 module.exports = routers
