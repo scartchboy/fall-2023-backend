@@ -6,5 +6,5 @@ const adminRoutes = require('./admin.route')
 
 routers.use('/user', authenticationRoutes)
 routers.use('/auth/user', userRoutes)
-routers.use('/admin', adminRoutes)
+routers.use('/auth/admin', adminRoutes)
 module.exports = routers

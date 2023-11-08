@@ -1,27 +1,27 @@
 const jwt = require('jsonwebtoken')
 const env = require('dotenv')
-module.exports.generateAccessToken = async ({ _id }) => {
+module.exports.generateAccessToken = async ({ email }) => {
   const accessToken = await jwt.sign(
     {
-      id: _id,
+      email: email,
     },
 
     process.env.ACCESS_KEY,
     {
-      expiresIn: '3d',
+      expiresIn: '1d',
     },
   )
   return accessToken
 }
-module.exports.generateRefreshToken = async ({ _id }) => {
+module.exports.generateRefreshToken = async ({ email }) => {
   const accessToken = await jwt.sign(
     {
-      id: _id,
+      email: email,
     },
 
     process.env.REFRESH_KEY,
     {
-      expiresIn: '3d',
+      expiresIn: '1d',
     },
   )
   return accessToken
