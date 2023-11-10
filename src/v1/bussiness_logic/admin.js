@@ -19,7 +19,7 @@ module.exports.getVerificationUsers = async (req, res) => {
   }
 }
 
-module.exports.verificationUser = async (req, res) => {
+module.exports.verifyUSer = async (req, res) => {
   try {
     const userId = req.params.id
     const updateQuery = 'UPDATE users SET isVerified = true WHERE id = ?'
@@ -39,6 +39,23 @@ module.exports.verificationUser = async (req, res) => {
       res.status(200).json({ message: 'User verified successfully' })
     })
   } catch (e) {
+    res.send(e.message)
+  }
+}
+
+module.exports.declineUser = async (req, res) => {
+  try {
+    const userId = req.params.id
+
+    const deleteQuery = 'DELETE FROM users WHERE id = ?'
+    dbConnection.query(deleteQuery, [userId], (err, results) => {
+      if (err) {
+        res.status(500).json({ error: 'Internal server error' })
+        return
+      }
+      res.status(200).json({ message: 'User Declined successfully' })
+    })
+  } catch (error) {
     res.send(e.message)
   }
 }
