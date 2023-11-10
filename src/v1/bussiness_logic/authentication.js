@@ -13,6 +13,7 @@ const {
 
 module.exports.register = async (req, res) => {
   try {
+    console.log(req.body);
     let password = req.body.password.toString()
     const hashpassword = await encryptPassword(password)
 
@@ -92,8 +93,10 @@ module.exports.login = async (req, res, next) => {
         const refreshToken = await generateRefreshToken(user)
         const userDetails = {
           id: user.id,
-          username: user.username,
+          firstname: user.firstname,
+          lastname: user.lastname,
           email: user.email,
+          isAdmin: user.isAdmin,
           accessToken,
           refreshToken,
         }

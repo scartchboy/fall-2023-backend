@@ -6,7 +6,7 @@ const {
 } = require('../bussiness_logic/authentication')
 
 routes.post('/register', register)
-routes.get('/login', login)
+routes.post('/login', login)
 routes.use('/verifyEmail/:token', verifyEmail)
 
 module.exports = routes

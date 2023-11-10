@@ -2,10 +2,11 @@ const { verifyAccessToken, verifyRefreshToken } = require('../helpers/jwt')
 const jwt =require('jsonwebtoken')
 
 module.exports.validateToken = async (req, res, next) => {
-  if (!req.originalUrl.includes('auth')) {
+  if (req.originalUrl.includes('auth')) {
     return next()
   }
-  const bearerToken = req.headers.authorization
+
+  const bearerToken = req.headers['authorization']
   if (!bearerToken) {
     return res.status(401).send({
       success: false,
