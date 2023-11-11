@@ -4,6 +4,9 @@ const { SendEmail } = require('../../utils/emailservice')
 
 const { verifyAccessToken, verifyRefreshToken } = require('../../helpers/jwt')
 
+const speakeasy = require('speakeasy')
+var QRCode = require('qrcode')
+
 const {
   encryptPassword,
   verifyPassword,
@@ -14,7 +17,7 @@ const {
 
 module.exports.register = async (req, res) => {
   try {
-    console.log(req.body);
+    console.log(req.body)
     let password = req.body.password.toString()
     const hashpassword = await encryptPassword(password)
 
@@ -173,4 +176,39 @@ module.exports.refreshToken = async (req, res) => {
       refreshToken: newRefreshToken,
     })
   } catch (e) {}
+}
+
+module.exports.sendQRCode = (req, res) => {
+  try {
+    var secret = speakeasy.generateSecret()
+    QRCode.toDataURL(secret.otpauth_url, function (err, data_url) {
+      res.send({
+        code: secret.base32,
+        QrCode: '<img src="' + data_url + '">',
+      })
+    }).catch((err) => {
+      res.send({ message: error.message })
+    })
+  } catch (error) {
+    res.send({ message: error.message })
+  }
+}
+
+module.exports.verifyOtp = (req, res) => {
+  const { otp, code } = req.body
+
+  try {
+    const isVerified = speakeasy.totp.verify({
+      secret: code,
+      encoding: 'base32',
+      token: otp,
+    })
+
+    if (!isVerified) {
+      res.send('invalid otp')
+    }
+    res.send('verified otp')
+  } catch (error) {
+    res.send(error.message)
+  }
 }

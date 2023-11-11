@@ -3,16 +3,18 @@ const {
   register,
   login,
   verifyEmail,
-  verifyEmail,
   refreshToken,
   resetPassword,
+  sendQRCode,
+  verifyOtp
 } = require('../bussiness_logic/authentication')
 
 routes.post('/register', register)
 routes.post('/login', login)
 routes.use('/verifyEmail/:token', verifyEmail)
-routes.use('/declineUser/:token', declineUser)
 routes.use('/refreshToken', refreshToken)
 routes.use('/resetPassword', resetPassword)
+routes.use('/sendQRCode', sendQRCode)
+routes.post('/verifyOtp', verifyOtp)
 
 module.exports = routes

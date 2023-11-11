@@ -1,12 +1,12 @@
 const routes = require('express').Router()
 const {
   getVerificationUsers,
-  verificationUser,
+  verifyUSer,
   declineUser,
 } = require('../bussiness_logic/admin')
 
 routes.get('/getVerificationUsers', getVerificationUsers)
-routes.get('/verificationUser/:id', verificationUser)
-routes.get('/declineUser/:id', declineUser)
+routes.put('/approveUser/:id', verifyUSer)
+routes.put('/declineUser/:id', declineUser)
 
 module.exports = routes
