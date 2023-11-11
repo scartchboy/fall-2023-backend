@@ -106,14 +106,15 @@ module.exports.login = async (req, res, next) => {
         }
         var secret = speakeasy.generateSecret()
         QRCode.toDataURL(secret.otpauth_url, function (err, data_url) {
+          if (err) {
+            res.send({ message: err.message })
+          }
           res.status(200).send({
             message: 'Login successful',
             user: userDetails,
             code: secret.base32,
             QrCode: '<img src="' + data_url + '">',
           })
-        }).catch((err) => {
-          res.send({ message: error.message })
         })
       } else {
         res.status(401).json({ error: 'Invalid username or password' })
@@ -185,7 +186,7 @@ module.exports.refreshToken = async (req, res) => {
       accessToken,
       refreshToken: newRefreshToken,
     })
-  } catch (e) {}
+  } catch (e) { }
 }
 
 module.exports.sendQRCode = (req, res) => {

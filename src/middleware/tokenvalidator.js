@@ -32,5 +32,4 @@ module.exports.validateToken = async (req, res, next) => {
       message: error.message,
     })
   }
-
 }

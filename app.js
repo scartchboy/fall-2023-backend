@@ -34,7 +34,7 @@ app.use((_req, res, next) => {
 	next();
 });
 
-// app.use(validateToken)
+app.use(validateToken)
 app.get('/', (req, res, next) => {
   res.send(' route check server')
 })
