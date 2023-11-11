@@ -5,12 +5,21 @@ const bodyParser = require('body-parser')
 const routes = require('./src/v1/routes/index')
 const { validateToken } = require('./src/middleware/index')
 
+const cors = require('cors');
+const correlator = require('express-correlation-id');
+
+
 const app = express()
 
 
 app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
+app.use(cors());
+
+app.use(correlator({ header: 'x-correlationd-id' }));
+
 
 app.use((_req, res, next) => {
 	// Website you wish to allow to connect
