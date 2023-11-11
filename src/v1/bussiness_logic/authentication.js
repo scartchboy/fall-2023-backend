@@ -17,7 +17,6 @@ const {
 
 module.exports.register = async (req, res) => {
   try {
-    console.log(req.body)
     let password = req.body.password.toString()
     const hashpassword = await encryptPassword(password)
 
@@ -33,34 +32,35 @@ module.exports.register = async (req, res) => {
         return
       }
 
-      console.log(results)
       if (results.length > 0) {
         res.status(400).send({ error: 'User with this email already exists' })
-      }
-    })
+        return
+      } else {
+        dbConnection.query(sql, newUser, async (err) => {
+          if (err) {
+            return res.status(500).send({ error: 'User registration failed' })
+          }
+          const verificationToken = await generateAccessToken(newUser)
 
-    dbConnection.query(sql, newUser, async (err) => {
-      if (err) {
-        return res.status(500).json({ error: 'User registration failed' })
-      }
-      const verificationToken = await generateAccessToken(newUser)
+          const mailOptions = {
+            email: email,
+            subject: 'Email Verification',
+            text: `Hello , Please Verify your email by Clicking verify Button `,
+            html: `<a href="http://localhost:5000/v1/user/verifyEmail/${verificationToken}">click here</a>`,
+          }
 
-      const mailOptions = {
-        email: email,
-        subject: 'Email Verification',
-        text: `Hello , Please Verify your email by Clicking verify Button `,
-        html: `<a href="http://localhost:5000/v1/user/verifyEmail/${verificationToken}">click here</a>`,
-      }
-
-      try {
-        await SendEmail(mailOptions)
-        res.status(200).json({
-          message: 'User registered successfully. Verification email sent.',
-        })
-      } catch (error) {
-        res.status(500).json({
-          error: 'Verification Email sending failed',
-          message: error.message,
+          try {
+            await SendEmail(mailOptions)
+            res.status(200).send({
+              message: 'User registered successfully. Verification email sent.',
+            })
+            return
+          } catch (error) {
+            res.status(500).send({
+              error: 'Verification Email sending failed',
+              message: error.message,
+            })
+          }
         })
       }
     })
@@ -104,7 +104,17 @@ module.exports.login = async (req, res, next) => {
           accessToken,
           refreshToken,
         }
-        res.status(200).send({ message: 'Login successful', user: userDetails })
+        var secret = speakeasy.generateSecret()
+        QRCode.toDataURL(secret.otpauth_url, function (err, data_url) {
+          res.status(200).send({
+            message: 'Login successful',
+            user: userDetails,
+            code: secret.base32,
+            QrCode: '<img src="' + data_url + '">',
+          })
+        }).catch((err) => {
+          res.send({ message: error.message })
+        })
       } else {
         res.status(401).json({ error: 'Invalid username or password' })
       }
@@ -205,10 +215,11 @@ module.exports.verifyOtp = (req, res) => {
     })
 
     if (!isVerified) {
-      res.send('invalid otp')
+      res.status(500).send({ success: false, message: 'verified failed' })
     }
-    res.send('verified otp')
+
+    res.send({ success: true, message: 'verified successful' })
   } catch (error) {
-    res.send(error.message)
+    res.send({ success: false, message: error.message })
   }
 }
