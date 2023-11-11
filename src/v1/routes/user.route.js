@@ -4,10 +4,13 @@ const {
   updateProfile,
   deleteAccount,
   allUser,
+  changePassword
 } = require('../bussiness_logic/user')
 
-routes.post('/updateProfile/:id', updateProfile)
-routes.post('/deleteAccount/:id', deleteAccount)
+routes.post('/updateProfile/', updateProfile)
+routes.post('/deleteAccount/', deleteAccount)
+routes.use('/changePassword', changePassword)
 routes.get('/allUsers', allUser)
+
 
 module.exports = routes

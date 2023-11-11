@@ -1,5 +1,10 @@
 const dbConnection = require('../../utils/database')
-
+const {
+  encryptPassword,
+  verifyPassword,
+  generateAccessToken,
+  generateRefreshToken,
+} = require('../../helpers/index')
 
 module.exports.updateProfile = async (req, res, next) => {
   try {
@@ -58,4 +63,26 @@ module.exports.allUser = async (req, res, next) => {
   })
 }
 
+module.exports.changePassword = async (req, res, next) => {
+  const { email } = req.decoded
+  const { newPassword } = req.body
+  
+  const hashpassword = await encryptPassword(newPassword)
 
+  const updatePasswordQuery =
+    'UPDATE users SET hashpassword = ? WHERE email = ?'
+
+  dbConnection.query(
+    updatePasswordQuery,
+    [hashpassword, email],
+    (updateErr, updateResults) => {
+      if (updateErr) {
+        res
+          .status(500)
+          .send({ error: 'Internal server error', message: updateErr })
+      }
+
+      res.status(200).json({ message: 'Password changed successfully' })
+    },
+  )
+}
