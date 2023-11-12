@@ -12,10 +12,10 @@ const {
 
 routes.post('/register', register)
 routes.post('/login', login)
-routes.use('/verifyEmail/:token', verifyEmail)
+routes.post('/verifyEmail/:token', verifyEmail)
 routes.use('/refreshToken', refreshToken)
-routes.use('/resetPasswordLink', resetPasswordLink)
-routes.use('/resetPassword', resetPassword)
+routes.post('/resetPasswordLink', resetPasswordLink)
+routes.post('/resetPassword', resetPassword)
 routes.use('/sendQRCode', sendQRCode)
 routes.post('/verifyOtp', verifyOtp)
 

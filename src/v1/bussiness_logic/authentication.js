@@ -46,7 +46,7 @@ module.exports.register = async (req, res) => {
             email: email,
             subject: 'Email Verification',
             text: `Hello , Please Verify your email by Clicking verify Button `,
-            html: `<a href="http://localhost:5000/v1/user/verifyEmail/${verificationToken}">click here</a>`,
+            html: `<a href="http://localhost:5000/v1/auth/user/verifyEmail/${verificationToken}">click here</a>`,
           }
 
           try {
@@ -227,8 +227,8 @@ module.exports.verifyOtp = (req, res) => {
 }
 
 module.exports.resetPassword = async (req, res, next) => {
-  const token = req.params.token
-  const { newPassword } = req.body
+  // const token = req.params.token
+  const { newPassword, token } = req.body
   const { email } = await verifyAccessToken(token)
 
   const hashpassword = await encryptPassword(newPassword)
