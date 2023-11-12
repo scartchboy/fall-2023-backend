@@ -15,7 +15,7 @@ routes.post('/login', login)
 routes.use('/verifyEmail/:token', verifyEmail)
 routes.use('/refreshToken', refreshToken)
 routes.use('/resetPasswordLink', resetPasswordLink)
-routes.use('/resetPassword', resetPassword)
+routes.use('/resetPassword/:token', resetPassword)
 routes.use('/sendQRCode', sendQRCode)
 routes.post('/verifyOtp', verifyOtp)
 
