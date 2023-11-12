@@ -1,4 +1,4 @@
-const { verifyAccessToken, verifyRefreshToken } = require('../helpers/jwt')
+const { verifyAccessToken, verifyRefreshToken } = require('./jwt')
 const jwt =require('jsonwebtoken')
 
 module.exports.validateToken = async (req, res, next) => {

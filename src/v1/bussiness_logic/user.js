@@ -4,7 +4,7 @@ const {
   verifyPassword,
   generateAccessToken,
   generateRefreshToken,
-} = require('../../helpers/index')
+} = require('../../utils/index')
 
 module.exports.updateProfile = async (req, res, next) => {
   try {
@@ -67,48 +67,36 @@ module.exports.changePassword = async (req, res, next) => {
   const { email } = req.decoded
   const { oldPassword, newPassword } = req.body
 
-
-  try{
+  try {
     const getOldPasswordQuery = 'SELECT hashpassword from users WHERE email = ?'
-  const updatePasswordQuery =
-    'UPDATE users SET hashpassword = ? WHERE email = ?'
+    const updatePasswordQuery =
+      'UPDATE users SET hashpassword = ? WHERE email = ?'
 
-  dbConnection.query(getOldPasswordQuery, [email], async (err, result) => {
+    dbConnection.query(getOldPasswordQuery, [email], async (err, result) => {
+      const password = result[0].hashpassword
 
-    const password = result[0].hashpassword
-    
-    const isValidPassword = await verifyPassword(
-      oldPassword,
-      password,
-    )
+      const isValidPassword = await verifyPassword(oldPassword, password)
 
-    if (!isValidPassword) {
-      return res.send({ message: 'password is invalid' })
-    }else{
-      
-  const hashpassword = await encryptPassword(newPassword)
-  dbConnection.query(
-    updatePasswordQuery,
-    [hashpassword, email],
-    (updateErr, updateResults) => {
-      if (updateErr) {
-        res
-          .status(500)
-          .send({ error: 'Internal server error', message: updateErr })
+      if (!isValidPassword) {
+        return res.status(500).send({ message: 'password is invalid' })
       } else {
-        res.status(200).json({ message: 'Password changed successfully' })
+        const hashpassword = await encryptPassword(newPassword)
+        dbConnection.query(
+          updatePasswordQuery,
+          [hashpassword, email],
+          (updateErr, updateResults) => {
+            if (updateErr) {
+              res
+                .status(500)
+                .send({ error: 'Internal server error', message: updateErr })
+            } else {
+              res.status(200).json({ message: 'Password changed successfully' })
+            }
+          },
+        )
       }
-    },
-  )
-    }
-  })
+    })
+  } catch (e) {
+    res.status(500).send({ error: 'Internal server error', message: e.message })
   }
-  catch (e){
-
-    res
-    .status(500)
-    .send({ error: 'Internal server error', message: e.message })
-  }
-
- 
 }

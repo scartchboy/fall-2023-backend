@@ -3,7 +3,7 @@ require('./src/utils/database')
 const express = require('express')
 const bodyParser = require('body-parser')
 const routes = require('./src/v1/routes/index')
-const { validateToken } = require('./src/middleware/index')
+const { validateToken } = require('./src/utils/index')
 
 const cors = require('cors');
 const correlator = require('express-correlation-id');

@@ -2,7 +2,7 @@ const dbConnection = require('../../utils/database')
 
 const { SendEmail } = require('../../utils/emailservice')
 
-const { verifyAccessToken, verifyRefreshToken } = require('../../helpers/jwt')
+const { verifyAccessToken, verifyRefreshToken } = require('../../utils/jwt')
 
 const speakeasy = require('speakeasy')
 var QRCode = require('qrcode')
@@ -13,7 +13,7 @@ const {
 
   generateAccessToken,
   generateRefreshToken,
-} = require('../../helpers/index')
+} = require('../../utils/index')
 
 module.exports.register = async (req, res) => {
   try {
@@ -41,12 +41,18 @@ module.exports.register = async (req, res) => {
             return res.status(500).send({ error: 'User registration failed' })
           }
           const verificationToken = await generateAccessToken(newUser)
+          const emailBody = `
+  <p>Dear ${firstname},</p>
+  <p>Thank you for registering . To complete your registration, please click the button below to verify your email address:</p>
+  <p><a href="http://localhost:5000/v1/auth/user/verifyEmail/${verificationToken}" style="display:inline-block; padding: 10px 20px; background-color: #28a745; color: #ffffff; text-decoration: none; border-radius: 5px;">Verify Email</a></p>
+  <p>If you did not sign up for an account, please ignore this email.</p>
+  <p>Thank you,</p>
+`
 
           const mailOptions = {
             email: email,
             subject: 'Email Verification',
-            text: `Hello , Please Verify your email by Clicking verify Button `,
-            html: `<a href="http://localhost:5000/v1/auth/user/verifyEmail/${verificationToken}">click here</a>`,
+            html: emailBody,
           }
 
           try {
@@ -101,8 +107,8 @@ module.exports.login = async (req, res, next) => {
           lastname: user.lastname,
           email: user.email,
           isAdmin: user.isAdmin,
-          isVerified:user.isVerified,
-          isEmailVerified:user.isEmailVerified,
+          isVerified: user.isVerified,
+          isEmailVerified: user.isEmailVerified,
           accessToken,
           refreshToken,
         }
@@ -130,7 +136,6 @@ module.exports.login = async (req, res, next) => {
 module.exports.verifyEmail = async (req, res, next) => {
   const token = req.params.token
   try {
-    console.log(req.params.token)
     const { email } = await verifyAccessToken(token)
     const sql = `UPDATE users SET isEmailVerified = true WHERE email='${email}'`
     dbConnection.query(sql, function (error, result) {
@@ -154,12 +159,19 @@ module.exports.resetPasswordLink = async (req, res, next) => {
     } else {
       try {
         const verificationToken = await generateAccessToken({ email })
+        const emailBody = `
+  <p>Dear ${results[0].firstname},</p>
+  <p>We received a request to reset your password.</p>
+  <p>To proceed with the password reset, please click the button below:</p>
+  <p><a href="http://localhost:3000/reset-password/${verificationToken}" style="display:inline-block; padding: 10px 20px; background-color: #007BFF; color: #ffffff; text-decoration: none; border-radius: 5px;">Reset Password</a></p>
+  <p>If you did not request a password reset, please ignore this email.</p>
+  <p>Thank you,</p>
+`
 
         const mailOptions = {
           email: email,
           subject: 'Reset password',
-          text: `Hello , Please use the link below to set the new password `,
-          html: `<a href="http://localhost:3000/reset-password/${verificationToken}">click here</a>`,
+          html: emailBody,
         }
         await SendEmail(mailOptions)
         res.status(200).json({
