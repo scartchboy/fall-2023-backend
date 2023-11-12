@@ -101,6 +101,8 @@ module.exports.login = async (req, res, next) => {
           lastname: user.lastname,
           email: user.email,
           isAdmin: user.isAdmin,
+          isVerified:user.isVerified,
+          isEmailVerified:user.isEmailVerified,
           accessToken,
           refreshToken,
         }
@@ -139,7 +141,7 @@ module.exports.verifyEmail = async (req, res, next) => {
   }
 }
 
-module.exports.resetPassword = async (req, res, next) => {
+module.exports.resetPasswordLink = async (req, res, next) => {
   const { email } = req.body
 
   const userCheckQuery = 'SELECT * FROM users WHERE email = ?'
@@ -147,29 +149,28 @@ module.exports.resetPassword = async (req, res, next) => {
   dbConnection.query(userCheckQuery, [email], async (err, results) => {
     if (err) {
       return res.status(500).send({ error: 'User not found' })
-    }
-    if (results.length === 0) {
+    } else if (results.length === 0) {
       res.status(404).send({ error: 'User not found' })
-    }
-    const verificationToken = await generateAccessToken({ emaill })
+    } else {
+      try {
+        const verificationToken = await generateAccessToken({ email })
 
-    const mailOptions = {
-      email: email,
-      subject: 'reset password',
-      text: `Hello , Please use the link below to set the new password `,
-      html: `<a href="http://localhost:5000/v1/user/verifyEmail/${verificationToken}">click here</a>`,
-    }
-
-    try {
-      await SendEmail(mailOptions)
-      res.status(200).json({
-        message: 'User registered successfully. Verification email sent.',
-      })
-    } catch (error) {
-      res.status(500).json({
-        error: 'Verification Email sending failed',
-        message: error.message,
-      })
+        const mailOptions = {
+          email: email,
+          subject: 'Reset password',
+          text: `Hello , Please use the link below to set the new password `,
+          html: `<a href="http://localhost:3000/reset-password/${verificationToken}">click here</a>`,
+        }
+        await SendEmail(mailOptions)
+        res.status(200).json({
+          message: 'Email sending successful',
+        })
+      } catch (error) {
+        res.status(500).json({
+          error: ' Email sending failed',
+          message: error.message,
+        })
+      }
     }
   })
 }
@@ -186,7 +187,7 @@ module.exports.refreshToken = async (req, res) => {
       accessToken,
       refreshToken: newRefreshToken,
     })
-  } catch (e) { }
+  } catch (e) {}
 }
 
 module.exports.sendQRCode = (req, res) => {
@@ -215,12 +216,41 @@ module.exports.verifyOtp = (req, res) => {
       token: otp,
     })
 
-    if (!isVerified) {
+    if (isVerified) {
+      res.send({ success: true, message: 'verified successful' })
+    } else {
       res.status(500).send({ success: false, message: 'verified failed' })
     }
-
-    res.send({ success: true, message: 'verified successful' })
   } catch (error) {
     res.send({ success: false, message: error.message })
+  }
+}
+
+module.exports.resetPassword = async (req, res, next) => {
+  const token = req.params.token
+  const { newPassword } = req.body
+  const { email } = await verifyAccessToken(token)
+
+  const hashpassword = await encryptPassword(newPassword)
+
+  const updatePasswordQuery =
+    'UPDATE users SET hashpassword = ? WHERE email = ?'
+
+  try {
+    dbConnection.query(
+      updatePasswordQuery,
+      [hashpassword, email],
+      (updateErr, updateResults) => {
+        if (updateErr) {
+          res
+            .status(500)
+            .send({ error: 'Internal server error', message: updateErr })
+        } else {
+          res.status(200).json({ message: 'Password changed successfully' })
+        }
+      },
+    )
+  } catch (e) {
+    res.json({ message: e.message })
   }
 }

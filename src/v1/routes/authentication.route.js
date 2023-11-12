@@ -5,14 +5,16 @@ const {
   verifyEmail,
   refreshToken,
   resetPassword,
+  resetPasswordLink,
   sendQRCode,
-  verifyOtp
+  verifyOtp,
 } = require('../bussiness_logic/authentication')
 
 routes.post('/register', register)
 routes.post('/login', login)
 routes.use('/verifyEmail/:token', verifyEmail)
 routes.use('/refreshToken', refreshToken)
+routes.use('/resetPasswordLink', resetPasswordLink)
 routes.use('/resetPassword', resetPassword)
 routes.use('/sendQRCode', sendQRCode)
 routes.post('/verifyOtp', verifyOtp)

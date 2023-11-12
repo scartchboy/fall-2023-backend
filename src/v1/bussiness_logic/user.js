@@ -65,13 +65,28 @@ module.exports.allUser = async (req, res, next) => {
 
 module.exports.changePassword = async (req, res, next) => {
   const { email } = req.decoded
-  const { newPassword } = req.body
-  
-  const hashpassword = await encryptPassword(newPassword)
+  const { oldPassword, newPassword } = req.body
 
+
+  try{
+    const getOldPasswordQuery = 'SELECT hashpassword from users WHERE email = ?'
   const updatePasswordQuery =
     'UPDATE users SET hashpassword = ? WHERE email = ?'
 
+  dbConnection.query(getOldPasswordQuery, [email], async (err, result) => {
+
+    const password = result[0].hashpassword
+    
+    const isValidPassword = await verifyPassword(
+      oldPassword,
+      password,
+    )
+
+    if (!isValidPassword) {
+      return res.send({ message: 'password is invalid' })
+    }else{
+      
+  const hashpassword = await encryptPassword(newPassword)
   dbConnection.query(
     updatePasswordQuery,
     [hashpassword, email],
@@ -80,9 +95,20 @@ module.exports.changePassword = async (req, res, next) => {
         res
           .status(500)
           .send({ error: 'Internal server error', message: updateErr })
+      } else {
+        res.status(200).json({ message: 'Password changed successfully' })
       }
-
-      res.status(200).json({ message: 'Password changed successfully' })
     },
   )
+    }
+  })
+  }
+  catch (e){
+
+    res
+    .status(500)
+    .send({ error: 'Internal server error', message: e.message })
+  }
+
+ 
 }
