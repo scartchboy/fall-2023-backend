@@ -1,6 +1,6 @@
-var elasticClient = require('../../utils/elasticSearchClient.js');
 
-var elasticClient = new Client({
+
+var elasticClient =  Client({
   node: 'https://localhost:9200',
   auth: {
     apiKey: 'RW9VLVdvc0IxZTlYcDk3S0dZRk86czFKRWdBTkZUQkdUOWJsU2hXNjRxUQ=='

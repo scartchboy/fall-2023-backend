@@ -5,7 +5,7 @@ const {
   deleteAccount,
   allUser,
   changePassword
-} = require('../bussiness_logic/user')
+} = require('../controllers/user')
 
 routes.post('/updateProfile/', updateProfile)
 routes.post('/deleteAccount/', deleteAccount)

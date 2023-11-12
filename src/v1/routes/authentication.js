@@ -8,7 +8,7 @@ const {
   resetPasswordLink,
   sendQRCode,
   verifyOtp,
-} = require('../bussiness_logic/authentication')
+} = require('../controllers/authentication')
 
 routes.post('/register', register)
 routes.post('/login', login)

@@ -3,7 +3,7 @@ const {
   getVerificationUsers,
   verifyUSer,
   declineUser,
-} = require('../bussiness_logic/admin')
+} = require('../controllers/admin')
 
 routes.get('/getVerificationUsers', getVerificationUsers)
 routes.put('/approveUser/:id', verifyUSer)

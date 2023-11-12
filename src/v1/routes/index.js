@@ -1,10 +1,10 @@
 const routers = require('express').Router()
 const multer = require('multer');
 
-const authenticationRoutes = require('./authentication.route')
-const userRoutes = require('./user.route')
-const adminRoutes = require('./admin.route')
-const { searchDocuments, insertDocument } = require('../bussiness_logic/elastic')
+const authenticationRoutes = require('./authentication')
+const userRoutes = require('./user')
+const adminRoutes = require('./admin')
+const { searchDocuments, insertDocument } = require('../controllers/elastic')
 
 // Set up storage for uploaded files
 const storage = multer.diskStorage({
