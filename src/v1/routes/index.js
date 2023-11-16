@@ -22,7 +22,7 @@ const upload = multer({ storage: storage });
 routers.use('/auth/user', authenticationRoutes)
 routers.use('/user', userRoutes)
 routers.use('/admin', adminRoutes)
-routers.post('/searchDocuments', searchDocuments)
-router.post('/insertDocumnet', upload.single('file') ,insertDocument);
+routers.get('/searchDocuments', searchDocuments)
+routers.post('/insertDocumnet', upload.single('file') ,insertDocument);
 
 module.exports = routers

@@ -1,6 +1,6 @@
+const { Client } = require('@elastic/elasticsearch');
 
-
-var elasticClient =  Client({
+var elasticClient = new Client({
   node: 'https://localhost:9200',
   auth: {
     apiKey: 'RW9VLVdvc0IxZTlYcDk3S0dZRk86czFKRWdBTkZUQkdUOWJsU2hXNjRxUQ=='
@@ -29,18 +29,23 @@ var searchDocuments = function(req, res, next) {
     from = req.query.from,
     size = req.query.size;
 
+    console.log(query)
+
   try {
     elasticClient.search({
       index: 'search-etddocs',
-      q: query,
-      from: from,
-      size: size,
-      suggest: {
-        gotsuggest: {
-          text: query,
-          term: { field: 'abstract' },
+      body: {
+        query: {
+          fuzzy: {
+            "abstract": {
+              value: query,
+              fuzziness: "AUTO",
+            },
+          },
         },
       },
+      from: from,
+      size: size,
       highlight: {
         fields: {
           "*": {
