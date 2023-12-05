@@ -6,7 +6,7 @@ const userRoutes = require('./user')
 const adminRoutes = require('./admin')
 const { searchDocuments, insertDocument } = require('../controllers/elastic')
 
-const { startConvo } = require('../controllers/claude')
+const { chat } = require('../controllers/botAI')
 
 // Set up storage for uploaded files
 const storage = multer.diskStorage({
@@ -25,7 +25,7 @@ routers.use('/auth/user', authenticationRoutes)
 routers.use('/user', userRoutes)
 routers.use('/admin', adminRoutes)
 routers.get('/searchDocuments', searchDocuments)
-routers.post('/insertDocumnet', upload.single('file') ,insertDocument);
-routers.post('/startConversation', startConvo);
+routers.post('/insertDocumnet', upload.single('file'), insertDocument);
+routers.post('/chat', chat);
 
 module.exports = routers
