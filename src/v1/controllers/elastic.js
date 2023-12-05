@@ -4,8 +4,6 @@ const { axios } = require('axios')
 const { querystring } = require('querystring');
 
 
-const ETD_FILE_PATH = "";
-
 var elasticClient = new Client({
   node: 'https://localhost:9200',
   auth: {
@@ -165,5 +163,5 @@ const prepareMetaData = async (req, res, next) => {
 module.exports = {
   searchDocuments: searchDocuments,
   insertDocument: insertDocument,
-  prepareMetaData: prepareMetaData,
+  insertDocuments: insertDocuments,
 };
