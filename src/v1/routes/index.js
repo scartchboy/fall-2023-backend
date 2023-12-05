@@ -6,6 +6,8 @@ const userRoutes = require('./user')
 const adminRoutes = require('./admin')
 const { searchDocuments, insertDocument } = require('../controllers/elastic')
 
+const { startConvo } = require('../controllers/claude')
+
 // Set up storage for uploaded files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -24,5 +26,6 @@ routers.use('/user', userRoutes)
 routers.use('/admin', adminRoutes)
 routers.get('/searchDocuments', searchDocuments)
 routers.post('/insertDocumnet', upload.single('file') ,insertDocument);
+routers.post('/startConversation', startConvo);
 
 module.exports = routers

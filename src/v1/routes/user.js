@@ -7,10 +7,10 @@ const {
   changePassword
 } = require('../controllers/user')
 
+
 routes.post('/updateProfile/', updateProfile)
 routes.post('/deleteAccount/', deleteAccount)
 routes.use('/changePassword', changePassword)
 routes.get('/allUsers', allUser)
-
 
 module.exports = routes
