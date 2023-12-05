@@ -89,14 +89,14 @@ var insertDocument = function (req, res, next) {
   });
 };
 
-const insertDocuments = async (req, res, next) => {
+const insertDocuments = async (req, res) => {
   const data = await prepareMetaData();
 
   await elasticClient.helpers.bulk({
-    datasource: dataset,
+    datasource: data,
     pipeline: "ent-search-generic-ingestion",
     onDocument: (doc) => ({ index: { _index: 'search-etddocs' } }),
-  }).then(res => res.status(200).send({message:'Success'})).catch(e => console.log(e))
+  }).then(result => res.status(200).send({message:'Success'})).catch(e => console.log(e))
 }
 
 const prepareMetaData = async (req, res, next) => {

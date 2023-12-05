@@ -2,7 +2,7 @@ const OpenAI = require('openai')
 require('dotenv').config()
 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: "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",
   });
 
 let messages = []; 
@@ -10,11 +10,11 @@ let messages = [];
 const chat = async (req, res) => {
   const { message, title } = req.body;
 
-  const { isFeeding, flushMessages } = req.query;
+  const { loadText, clearMessages } = req.query;
 
-  if(flushMessages) messages = [];
+  if(clearMessages) messages = [];
 
-  if(isFeeding) {
+  if(loadText) {
     messages.push(
       {
         role: "assistant",
